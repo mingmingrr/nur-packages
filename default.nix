@@ -18,4 +18,13 @@
     powerline-contrib = pkgs.python3Packages.callPackage
       ./pkgs/python-modules/powerline-contrib.nix { };
   };
+
+  vimPlugins = {
+    vim-ansiesc = pkgs.callPackage
+      ./pkgs/vim-plugins/vim-ansiesc.nix { };
+    vim-super-retab = pkgs.callPackage
+      ./pkgs/vim-plugins/vim-super-retab.nix { };
+    vim-monokai-black = pkgs.callPackage
+      ./pkgs/vim-plugins/vim-monokai-black.nix { };
+  };
 }
