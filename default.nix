@@ -14,4 +14,8 @@
   modules = import ./modules; # NixOS modules
   overlays = import ./overlays; # nixpkgs overlays
 
+  python3Packages = {
+    powerline-contrib = pkgs.python3Packages.callPackage
+      ./pkgs/python-modules/powerline-contrib.nix { };
+  };
 }
