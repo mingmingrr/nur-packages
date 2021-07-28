@@ -8,7 +8,7 @@
 
 { pkgs ? import <nixpkgs> { } }:
 
-{
+rec {
   # The `lib`, `modules`, and `overlay` names are special
   lib = import ./lib { inherit pkgs; }; # functions
   modules = import ./modules; # NixOS modules
@@ -19,12 +19,13 @@
       ./pkgs/python-modules/powerline-contrib.nix { };
   };
 
-  vimPlugins = {
-    vim-ansiesc = pkgs.callPackage
-      ./pkgs/vim-plugins/vim-ansiesc.nix { };
-    vim-super-retab = pkgs.callPackage
-      ./pkgs/vim-plugins/vim-super-retab.nix { };
-    vim-monokai-black = pkgs.callPackage
-      ./pkgs/vim-plugins/vim-monokai-black.nix { };
-  };
+  vimPlugins = with builtins; with pkgs.lib; with lib; let
+    isNixFile = file: type: type == "regular" &&
+      ! hasPrefix "." file && hasSuffix ".nix" file;
+    readPlugin = file: type: {
+      name = removeSuffix ".nix" file;
+      value = pkgs.callPackage (./pkgs/vim-plugins + "/${file}") { };
+    };
+    in mapAttrsNameValue readPlugin
+      (filterAttrs isNixFile (readDir ./pkgs/vim-plugins));
 }

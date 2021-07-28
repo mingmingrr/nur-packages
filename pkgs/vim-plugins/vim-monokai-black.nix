@@ -1,5 +1,4 @@
 { vimUtils, fetchFromGitHub }:
-
 vimUtils.buildVimPluginFrom2Nix {
   name = "vim-monokai-black";
   version = "2016-05-31";
@@ -9,5 +8,5 @@ vimUtils.buildVimPluginFrom2Nix {
     rev = "db47322ab0ab3f2a4c0e7f5ae5e178a85c91262e";
     sha256 = "1vz49fvvpx8pmi79g932y3xs3aj5blzg3f310faqfgi2ra3qx0qp";
   };
+  meta.homepage = "https://github.com/louispan/vim-monokai-black";
 }
-
