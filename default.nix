@@ -8,24 +8,26 @@
 
 { pkgs ? import <nixpkgs> { } }:
 
-rec {
-  # The `lib`, `modules`, and `overlay` names are special
-  lib = import ./lib { inherit pkgs; }; # functions
-  modules = import ./modules; # NixOS modules
-  overlays = import ./overlays; # nixpkgs overlays
-
-  python3Packages = {
-    powerline-contrib = pkgs.python3Packages.callPackage
-      ./pkgs/python-modules/powerline-contrib.nix { };
-  };
-
-  vimPlugins = with builtins; with pkgs.lib; with lib; let
-    isNixFile = file: type: type == "regular" &&
-      ! hasPrefix "." file && hasSuffix ".nix" file;
-    readPlugin = file: type: {
+let
+  isNixFile = with pkgs.lib; file: type: type == "regular" &&
+    ! hasPrefix "." file && hasSuffix ".nix" file;
+  readNixFiles = with pkgs.lib; with selfLibs;
+    call: dir: mapAttrsNameValue (file: type: {
       name = removeSuffix ".nix" file;
-      value = pkgs.callPackage (./pkgs/vim-plugins + "/${file}") { };
-    };
-    in mapAttrsNameValue readPlugin
-      (filterAttrs isNixFile (readDir ./pkgs/vim-plugins));
+      value = call (dir + "/${file}") { };
+    });
+  readNixDir = with builtins; with pkgs.lib; call: dir:
+    readNixFiles call dir (filterAttrs isNixFile (readDir dir));
+  selfLibs = import ./lib { inherit pkgs; };
+  selfModules = import ./modules;
+  selfOverlays = import ./overlays;
+
+in rec {
+  lib = selfLibs;
+  modules = selfModules;
+  overlays = selfOverlays;
+
+  python3Packages = readNixDir pkgs.python3Packages.callPackage ./pkgs/python-modules;
+  xontribs = readNixDir pkgs.python3Packages.callPackage ./pkgs/xontribs;
+  vimPlugins = readNixDir pkgs.callPackage ./pkgs/vim-plugins;
 }
