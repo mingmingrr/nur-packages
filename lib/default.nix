@@ -14,7 +14,9 @@ let lib = rec {
          "{ ${scope'}\n}:\n${elemAt item group}" scope);
     in concatMapStrings process (split regex text);
 
-  interpolateNix = interpolate "\\\$\\{(( }|[^\\}])*)}" 0;
+  interpolateBraces = interpolate "\\\$\\{(( }|[^\\}])*)}" 0;
+  interpolateBrackets = interpolate "\\\$\\[(( ]|[^]])*)]" 0;
+  interpolateNix = interpolateBraces;
 
   attrsToList = attrs: map
     (name: { name = name; value = getAttr name attrs; }) (attrNames attrs);
