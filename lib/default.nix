@@ -26,4 +26,16 @@ let lib = rec {
 
   mapAttrsNameValue = func: attrs: listToAttrs (map
     ({name, value}: func name value) (attrsToList attrs));
+
+  isNixFile = file: type:
+    ! hasPrefix "." file && (type == "regular" -> hasSuffix ".nix" file);
+
+  readNixFiles = call: dir:
+    mapAttrsNameValue (file: type: {
+      name = removeSuffix ".nix" file;
+      value = call (dir + "/${file}") { };
+    });
+
+  readNixDir = call: dir:
+    readNixFiles call dir (filterAttrs isNixFile (readDir dir));
 }; in lib

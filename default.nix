@@ -1,33 +1,26 @@
-# This file describes your repository contents.
-# It should return a set of nix derivations
-# and optionally the special attributes `lib`, `modules` and `overlays`.
-# It should NOT import <nixpkgs>. Instead, you should take pkgs as an argument.
-# Having pkgs default to <nixpkgs> is fine though, and it lets you use short
-# commands such as:
-#     nix-build -A mypackage
-
 { pkgs ? import <nixpkgs> { } }:
 
 let
-  isNixFile = with pkgs.lib; file: type: type == "regular" &&
-    ! hasPrefix "." file && hasSuffix ".nix" file;
-  readNixFiles = with pkgs.lib; with selfLibs;
-    call: dir: mapAttrsNameValue (file: type: {
-      name = removeSuffix ".nix" file;
-      value = call (dir + "/${file}") { };
-    });
-  readNixDir = with builtins; with pkgs.lib; call: dir:
-    readNixFiles call dir (filterAttrs isNixFile (readDir dir));
-  selfLibs = import ./lib { inherit pkgs; };
+  selfLib = import ./lib { inherit pkgs; };
   selfModules = import ./modules;
-  selfOverlays = import ./overlays;
+  selfOverlays = import ./overlays { lib = pkgs.lib // selfLib; };
 
 in rec {
-  lib = selfLibs;
+  lib = selfLib;
   modules = selfModules;
   overlays = selfOverlays;
 
-  python3Packages = readNixDir pkgs.python3Packages.callPackage ./pkgs/python-modules;
-  xontribs = readNixDir pkgs.python3Packages.callPackage ./pkgs/xontribs;
-  vimPlugins = readNixDir pkgs.callPackage ./pkgs/vim-plugins;
+  python3Packages = with pkgs.lib; with selfLib; let
+    pkgs' = selfOverlays.python3-modules pkgs' pkgs;
+  in getAttrs (attrNames (readNixDir (path: _: path) ./pkgs/python-modules))
+    pkgs'.python3.pkgs;
+
+
+  xontribs = with pkgs.lib; with selfLib; let
+    pkgs' = selfOverlays.python3-xontribs pkgs' pkgs;
+  in getAttrs (attrNames (readNixDir (path: _: path) ./pkgs/xontribs))
+    pkgs'.python3.pkgs;
+
+  vimPlugins = with selfLib;
+    readNixDir pkgs.callPackage ./pkgs/vim-plugins;
 }
