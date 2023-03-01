@@ -1,6 +1,6 @@
 { vimUtils, fetchFromGitHub }:
-vimUtils.buildVimPluginFrom2Nix {
-  name = "vim-apl";
+vimUtils.buildVimPlugin {
+  pname = "vim-apl";
   version = "2020-12-06";
   src = fetchFromGitHub {
     owner = "justin2004";

@@ -1,5 +1,5 @@
 { vimUtils, fetchFromGitHub }:
-vimUtils.buildVimPluginFrom2Nix {
+vimUtils.buildVimPlugin {
   name = "vim-minimap";
   version = "2019-05-09";
   src = fetchFromGitHub {

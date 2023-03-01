@@ -1,6 +1,6 @@
 { vimUtils, fetchFromGitHub }:
-vimUtils.buildVimPluginFrom2Nix {
-  name = "happy-vim";
+vimUtils.buildVimPlugin {
+  pname = "happy-vim";
   version = "2021-04-27";
   src = fetchFromGitHub {
     owner = "andy-morris";

@@ -1,6 +1,6 @@
 { vimUtils, fetchFromGitHub }:
-vimUtils.buildVimPluginFrom2Nix {
-  name = "vim-monokai-black";
+vimUtils.buildVimPlugin {
+  pname = "vim-monokai-black";
   version = "2016-05-31";
   src = fetchFromGitHub {
     owner = "louispan";

@@ -1,6 +1,6 @@
 { vimUtils, fetchFromGitHub }:
-vimUtils.buildVimPluginFrom2Nix {
-  name = "vim-plugin-ansiesc";
+vimUtils.buildVimPlugin {
+  pname = "vim-plugin-ansiesc";
   version = "2019-04-07";
   src = fetchFromGitHub {
     owner = "powerman";

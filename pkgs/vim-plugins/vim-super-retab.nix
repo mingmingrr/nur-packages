@@ -1,6 +1,6 @@
 { vimUtils, fetchFromGitHub }:
-vimUtils.buildVimPluginFrom2Nix {
-  name = "vim-super-retab";
+vimUtils.buildVimPlugin {
+  pname = "vim-super-retab";
   version = "2013-11-07";
   src = fetchFromGitHub {
     owner = "rhlobo";
