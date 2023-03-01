@@ -1,5 +1,5 @@
 diff --git a/xontrib/powerline_binding.xsh b/xontrib/powerline_binding.xsh
-index 84fe559..b45ea82 100644
+index 84fe559..0d993b7 100644
 --- a/xontrib/powerline_binding.xsh
 +++ b/xontrib/powerline_binding.xsh
 @@ -2,6 +2,7 @@
@@ -18,3 +18,15 @@ index 84fe559..b45ea82 100644
  }
  
  xpl = XonshPowerline(powerline_args)
+@@ -32,6 +34,11 @@ def update_args(cmd, rtn, out, ts):
+     powerline_args["execution_time"] = ts[1] - ts[0] if ts else 0
+ 
+ 
++@events.on_pre_prompt
++def update_jobs():
++    powerline_args["jobnum"] = len(jobs.tasks)
++
++
+ def powerline_prompt():
+     width = shutil.get_terminal_size(80)[0]
+     ps = ""

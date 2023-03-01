@@ -6,7 +6,7 @@ buildPythonPackage rec {
     inherit pname version;
     sha256 = "392ddda92eec2b8d506df86473cfc246b53e407b7c904d534c0d25a0bd72bfa7";
   };
-  patches = [ ./client_id.patch ];
+  patches = [ ./updates.patch ];
   propagatedBuildInputs = [ powerline ];
   doCheck = false;
   meta = with lib; {
