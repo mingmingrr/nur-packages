@@ -25,6 +25,8 @@ in rec {
   vimPlugins = with selfLib;
     readNixDir pkgs.callPackage pkgs/vim-plugins;
 
+  principia = pkgs.callPackage pkgs/principia { stdenv = pkgs.libcxxStdenv; };
+
   cspice = pkgs.callPackage pkgs/cspice {};
   gmat = pkgs.callPackage pkgs/gmat {
     inherit cspice;
