@@ -23,4 +23,10 @@ in rec {
 
   vimPlugins = with selfLib;
     readNixDir pkgs.callPackage ./pkgs/vim-plugins;
+
+  cspice = pkgs.callPackage pkgs/cspice {};
+  gmat = pkgs.callPackage pkgs/gmat {
+    inherit cspice;
+    wxGTK32 = pkgs.wxGTK32.override { compat28 = true; };
+  };
 }

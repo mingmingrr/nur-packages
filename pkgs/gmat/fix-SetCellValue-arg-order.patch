@@ -1,0 +1,272 @@
+From 16b0ac29123fbdf4127d13e843d4dc60fe45d903 Mon Sep 17 00:00:00 2001
+From: mingmingrr <mingmingrr@gmail.com>
+Date: Sat, 13 May 2023 18:50:00 -0400
+Subject: [PATCH] fix SetCellValue arg order
+
+---
+ src/gui/app/FileUpdateDialog.cpp              | 18 +++----
+ src/gui/hardware/TankAndMixDialog.cpp         | 16 +++---
+ .../DynamicDataDisplaySetupPanel.cpp          | 11 ++--
+ .../subscriber/MdiChildDynamicDataFrame.cpp   |  4 +-
+ src/gui/subscriber/MdiTableViewFrame.cpp      | 50 +++++++++----------
+ 5 files changed, 50 insertions(+), 49 deletions(-)
+
+diff --git a/src/gui/app/FileUpdateDialog.cpp b/src/gui/app/FileUpdateDialog.cpp
+index 041dedc..a1cdf1e 100644
+--- a/src/gui/app/FileUpdateDialog.cpp
++++ b/src/gui/app/FileUpdateDialog.cpp
+@@ -150,27 +150,27 @@ void FileUpdateDialog::InitializeFiles()
+    for(it=files.begin() ; it < files.end(); it++ ) {
+       mGrid->AppendRows();
+       aRow = mGrid->GetNumberRows() - 1;
+-      mGrid->SetCellValue("1", aRow, 0); // set checked to true
+-      mGrid->SetCellValue(it->name, aRow, 1);
++      mGrid->SetCellValue(aRow, 0, "1"); // set checked to true
++      mGrid->SetCellValue(aRow, 1, it->name);
+       switch (it->status)
+       {
+          case IFileUpdater::NOMINAL:
+-            mGrid->SetCellValue("Nominal", aRow, 2);
++            mGrid->SetCellValue(aRow, 2, "Nominal");
+             break;
+          case IFileUpdater::ADDED:
+-            mGrid->SetCellValue("Added", aRow, 2);
++            mGrid->SetCellValue(aRow, 2, "Added");
+             break;
+          case IFileUpdater::DELETED:
+-            mGrid->SetCellValue("Deleted", aRow, 2);
++            mGrid->SetCellValue(aRow, 2, "Deleted");
+             break;
+          case IFileUpdater::LOCALMODIFIED:
+-            mGrid->SetCellValue("Modified (Local)", aRow, 2);
++            mGrid->SetCellValue(aRow, 2, "Modified (Local)");
+             break;
+          case IFileUpdater::LOCALMISSING:
+-            mGrid->SetCellValue("Missing (Local)", aRow, 2);
++            mGrid->SetCellValue(aRow, 2, "Missing (Local)");
+             break;
+          case IFileUpdater::MODIFIED:
+-            mGrid->SetCellValue("Modified", aRow, 2);
++            mGrid->SetCellValue(aRow, 2, "Modified");
+             break;
+       }
+    }
+@@ -285,7 +285,7 @@ void FileUpdateDialog::OnSelect(wxCommandEvent &event)
+       IsChecked = "";
+    for (int i=0; i<mGrid->GetNumberRows(); i++)
+    {
+-      mGrid->SetCellValue(IsChecked, i, 0);
++      mGrid->SetCellValue(i, 0, IsChecked);
+    }
+ }
+ 
+diff --git a/src/gui/hardware/TankAndMixDialog.cpp b/src/gui/hardware/TankAndMixDialog.cpp
+index 18e00a6..075246b 100644
+--- a/src/gui/hardware/TankAndMixDialog.cpp
++++ b/src/gui/hardware/TankAndMixDialog.cpp
+@@ -221,8 +221,8 @@ void TankAndMixDialog::OnButton(wxCommandEvent& event)
+       // if the string wasn't found in the second list, insert it
+       if (strId2 == wxNOT_FOUND)
+       {
+-         tankMixGrid->SetCellValue(s, nextEmptyRow, 0);
+-         tankMixGrid->SetCellValue("1.000000", nextEmptyRow, 1);
++         tankMixGrid->SetCellValue(nextEmptyRow, 0, s);
++         tankMixGrid->SetCellValue(nextEmptyRow, 1, "1.000000");
+          tankMixGrid->SelectBlock(nextEmptyRow, 1, nextEmptyRow, 1);
+ 
+          tankListBox->Delete(strId1);
+@@ -259,8 +259,8 @@ void TankAndMixDialog::OnButton(wxCommandEvent& event)
+             t = tankMixGrid->GetCellValue(row, 1);
+          }
+ 
+-         tankMixGrid->SetCellValue(s, row, 0);
+-         tankMixGrid->SetCellValue(t, row, 1);
++         tankMixGrid->SetCellValue(row, 0, s);
++         tankMixGrid->SetCellValue(row, 1, t);
+          ++row;
+       } while (s != "");
+    }
+@@ -272,8 +272,8 @@ void TankAndMixDialog::OnButton(wxCommandEvent& event)
+          if (val == "")
+             break;
+          tankListBox->Append(val);
+-         tankMixGrid->SetCellValue("", i, 0);
+-         tankMixGrid->SetCellValue("", i, 1);
++         tankMixGrid->SetCellValue(i, 0, "");
++         tankMixGrid->SetCellValue(i, 1, "");
+       }
+    }
+    
+@@ -351,8 +351,8 @@ void TankAndMixDialog::LoadData()
+                tankListBox->Delete(j);
+          }
+          // Fill the grid
+-         tankMixGrid->SetCellValue(selectedTanks[i], i, 0);
+-         tankMixGrid->SetCellValue(wxString::Format(wxT("%f"), mixValues[i]), i, 1);
++         tankMixGrid->SetCellValue(i, 0, selectedTanks[i]);
++         tankMixGrid->SetCellValue(i, 1, wxString::Format(wxT("%f"), mixValues[i]));
+       }
+    }
+    
+diff --git a/src/gui/subscriber/DynamicDataDisplaySetupPanel.cpp b/src/gui/subscriber/DynamicDataDisplaySetupPanel.cpp
+index 600d93d..5a5a8f5 100644
+--- a/src/gui/subscriber/DynamicDataDisplaySetupPanel.cpp
++++ b/src/gui/subscriber/DynamicDataDisplaySetupPanel.cpp
+@@ -224,8 +224,8 @@ void DynamicDataDisplaySetupPanel::LoadData()
+       {
+          for (Integer j = 0; j < displayDataStruct[i].size(); ++j)
+          {
+-            mDisplayDataGrid->SetCellValue(displayDataStruct[i][j].paramName,
+-               i, j);
++            mDisplayDataGrid->SetCellValue(i, j,
++               displayDataStruct[i][j].paramName);
+             if (displayDataStruct[i][j].paramName != "")
+                mDisplayDataGrid->AutoSizeColumn(j);
+          }
+@@ -386,7 +386,8 @@ void DynamicDataDisplaySetupPanel::OnGridCellDClick(wxGridEvent& event)
+    if (dataSettings.WasDataSaved())
+    {
+       displayDataStruct[rowIdx][colIdx] = dataSettings.GetParamSettings();
+-      mDisplayDataGrid->SetCellValue(displayDataStruct[rowIdx][colIdx].paramName, rowIdx, colIdx);
++      mDisplayDataGrid->SetCellValue(rowIdx, colIdx,
++         displayDataStruct[rowIdx][colIdx].paramName);
+       if (displayDataStruct[rowIdx][colIdx].paramName != "")
+          mDisplayDataGrid->AutoSizeColumn(colIdx);
+       EnableUpdate(true);
+@@ -451,8 +452,8 @@ void DynamicDataDisplaySetupPanel::OnDelete(wxKeyEvent& event)
+ 
+       SetParamDefaultValues(displayDataStruct[selectedRow][selectedCol]);
+       mDisplayDataGrid->
+-         SetCellValue(displayDataStruct[selectedRow][selectedCol].paramName,
+-         selectedRow, selectedCol);
++         SetCellValue(selectedRow, selectedCol,
++            displayDataStruct[selectedRow][selectedCol].paramName);
+ 
+       EnableUpdate(true);
+    }
+diff --git a/src/gui/subscriber/MdiChildDynamicDataFrame.cpp b/src/gui/subscriber/MdiChildDynamicDataFrame.cpp
+index 96d8a38..d252aa2 100644
+--- a/src/gui/subscriber/MdiChildDynamicDataFrame.cpp
++++ b/src/gui/subscriber/MdiChildDynamicDataFrame.cpp
+@@ -185,8 +185,8 @@ void MdiChildDynamicDataFrame::UpdateDynamicData(
+       {
+          // Check if the name of the parameter has been added yet
+          if (dynamicDataGrid->GetCellValue(2*i, j) != newData[i][j].paramName)
+-            dynamicDataGrid->SetCellValue(newData[i][j].paramName, 2*i, j);
+-         dynamicDataGrid->SetCellValue(newData[i][j].paramValue, 2*i + 1, j);
++            dynamicDataGrid->SetCellValue(2*i, j, newData[i][j].paramName);
++         dynamicDataGrid->SetCellValue(2*i + 1, j, newData[i][j].paramValue);
+       }
+    }
+ 
+diff --git a/src/gui/subscriber/MdiTableViewFrame.cpp b/src/gui/subscriber/MdiTableViewFrame.cpp
+index 03434f4..2e9a401 100644
+--- a/src/gui/subscriber/MdiTableViewFrame.cpp
++++ b/src/gui/subscriber/MdiTableViewFrame.cpp
+@@ -356,10 +356,10 @@ void MdiTableViewFrame::ObjectiveChanged(std::string name, Real value)
+       if (objectiveGrid->GetNumberRows() == 1)
+          objectiveGrid->Show();
+       aRow = objectiveGrid->GetNumberRows() - 1;
+-      objectiveGrid->SetCellValue(name, aRow, 0);
+-      objectiveGrid->SetCellValue(GmatStringUtil::ToString(value), aRow, 1);
+-      objectiveGrid->SetCellValue("", aRow, 2);
+-      objectiveGrid->SetCellValue("", aRow, 3);
++      objectiveGrid->SetCellValue(aRow, 0, name);
++      objectiveGrid->SetCellValue(aRow, 1, GmatStringUtil::ToString(value));
++      objectiveGrid->SetCellValue(aRow, 2, "");
++      objectiveGrid->SetCellValue(aRow, 3, "");
+       pageSizer->SetSizeHints(this);
+       pageSizer->Layout();
+    }
+@@ -368,9 +368,9 @@ void MdiTableViewFrame::ObjectiveChanged(std::string name, Real value)
+       // update row
+       Real oldValue;
+       GmatStringUtil::ToReal( objectiveGrid->GetCellValue(aRow, 1), &oldValue );
+-      objectiveGrid->SetCellValue(GmatStringUtil::ToString(value), aRow, 1);
+-      objectiveGrid->SetCellValue(GmatStringUtil::ToString(oldValue), aRow, 2);
+-      objectiveGrid->SetCellValue(GmatStringUtil::ToString(value-oldValue), aRow, 3);
++      objectiveGrid->SetCellValue(aRow, 1, GmatStringUtil::ToString(value));
++      objectiveGrid->SetCellValue(aRow, 2, GmatStringUtil::ToString(oldValue));
++      objectiveGrid->SetCellValue(aRow, 3, GmatStringUtil::ToString(value-oldValue));
+       objectiveGrid->Update();
+    }
+ }
+@@ -401,10 +401,10 @@ void MdiTableViewFrame::VariabledChanged(std::string name, Real value)
+       if (!variableGrid->IsEditable())
+          variableGrid->Enable(true);
+       aRow = variableGrid->GetNumberRows() - 1;
+-      variableGrid->SetCellValue(name, aRow, 0);
+-      variableGrid->SetCellValue(GmatStringUtil::ToString(value), aRow, 1);
+-      variableGrid->SetCellValue("", aRow, 2);
+-      variableGrid->SetCellValue("", aRow, 3);
++      variableGrid->SetCellValue(aRow, 0, name);
++      variableGrid->SetCellValue(aRow, 1, GmatStringUtil::ToString(value));
++      variableGrid->SetCellValue(aRow, 2, "");
++      variableGrid->SetCellValue(aRow, 3, "");
+       pageSizer->SetSizeHints(this);
+       pageSizer->Layout();
+    }
+@@ -413,9 +413,9 @@ void MdiTableViewFrame::VariabledChanged(std::string name, Real value)
+       // update row
+       Real oldValue;
+       GmatStringUtil::ToReal( variableGrid->GetCellValue(aRow, 1), &oldValue );
+-      variableGrid->SetCellValue(GmatStringUtil::ToString(value), aRow, 1);
+-      variableGrid->SetCellValue(GmatStringUtil::ToString(oldValue), aRow, 2);
+-      variableGrid->SetCellValue(GmatStringUtil::ToString(value-oldValue), aRow, 3);
++      variableGrid->SetCellValue(aRow, 1, GmatStringUtil::ToString(value));
++      variableGrid->SetCellValue(aRow, 2, GmatStringUtil::ToString(oldValue));
++      variableGrid->SetCellValue(aRow, 3, GmatStringUtil::ToString(value-oldValue));
+       variableGrid->Update();
+    }
+ }
+@@ -444,18 +444,18 @@ void MdiTableViewFrame::VariabledChanged(std::string name, std::string &value)
+          Show();
+       variableGrid->AppendRows();
+       aRow = variableGrid->GetNumberRows() - 1;
+-      variableGrid->SetCellValue(name, aRow, 0);
+-      variableGrid->SetCellValue(value, aRow, 1);
+-      variableGrid->SetCellValue("", aRow, 2);
+-      variableGrid->SetCellValue("", aRow, 3);
++      variableGrid->SetCellValue(aRow, 0, name);
++      variableGrid->SetCellValue(aRow, 1, value);
++      variableGrid->SetCellValue(aRow, 2, "");
++      variableGrid->SetCellValue(aRow, 3, "");
+       pageSizer->SetSizeHints(this);
+       pageSizer->Layout();
+    }
+    else
+    {
+       // update row
+-      variableGrid->SetCellValue(variableGrid->GetCellValue(aRow, 1), aRow, 2);
+-      variableGrid->SetCellValue(value, aRow, 1);
++      variableGrid->SetCellValue(aRow, 2, variableGrid->GetCellValue(aRow,1));
++      variableGrid->SetCellValue(aRow, 1, value);
+       variableGrid->Update();
+    }
+ }
+@@ -499,17 +499,17 @@ void MdiTableViewFrame::ConstraintChanged(std::string name, Real desiredValue,
+          Show();
+       constraintGrid->AppendRows();
+       aRow = constraintGrid->GetNumberRows() - 1;
+-      constraintGrid->SetCellValue(name, aRow, 0);
++      constraintGrid->SetCellValue(aRow, 0, name);
+       pageSizer->SetSizeHints(this);
+       pageSizer->Layout();
+    }
+    // update row
+-   constraintGrid->SetCellValue(GmatStringUtil::ToString(desiredValue), aRow, 1);
+-   constraintGrid->SetCellValue(GmatStringUtil::ToString(value), aRow, 2);
++   constraintGrid->SetCellValue(aRow, 1, GmatStringUtil::ToString(desiredValue));
++   constraintGrid->SetCellValue(aRow, 2, GmatStringUtil::ToString(value));
+    if (condition == 1)
+-      constraintGrid->SetCellValue(GmatStringUtil::ToString(desiredValue-value), aRow, 3);
++      constraintGrid->SetCellValue(aRow, 3, GmatStringUtil::ToString(desiredValue-value));
+    else
+-      constraintGrid->SetCellValue(GmatStringUtil::ToString(value-desiredValue), aRow, 3);
++      constraintGrid->SetCellValue(aRow, 3, GmatStringUtil::ToString(value-desiredValue));
+    constraintGrid->Update();
+ }
+ 
+-- 
+2.39.2
+

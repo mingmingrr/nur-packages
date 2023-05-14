@@ -1,0 +1,129 @@
+From 814eccc6220633df8ae66dfe53a391c5f5de27a1 Mon Sep 17 00:00:00 2001
+From: mingmingrr <mingmingrr@gmail.com>
+Date: Sat, 13 May 2023 18:50:13 -0400
+Subject: [PATCH] fix direct OnPaint calls
+
+---
+ src/gui/subscriber/GroundTrackCanvas.cpp | 2 ++
+ src/gui/subscriber/GroundTrackCanvas.hpp | 1 +
+ src/gui/subscriber/MdiChildTsFrame.cpp   | 3 +--
+ src/gui/subscriber/OrbitViewCanvas.cpp   | 2 ++
+ src/gui/subscriber/OrbitViewCanvas.hpp   | 1 +
+ src/gui/subscriber/TsPlotCanvas.cpp      | 6 +++---
+ src/gui/subscriber/TsPlotCanvas.hpp      | 1 +
+ src/gui/subscriber/ViewCanvas.hpp        | 1 +
+ 8 files changed, 12 insertions(+), 5 deletions(-)
+
+diff --git a/src/gui/subscriber/GroundTrackCanvas.cpp b/src/gui/subscriber/GroundTrackCanvas.cpp
+index 929f2f8..30f145d 100644
+--- a/src/gui/subscriber/GroundTrackCanvas.cpp
++++ b/src/gui/subscriber/GroundTrackCanvas.cpp
+@@ -482,6 +482,8 @@ void GroundTrackCanvas::TakeAction(const std::string &action)
+  */
+ //------------------------------------------------------------------------------
+ void GroundTrackCanvas::OnPaint(wxPaintEvent& event)
++{ DoPaint(); }
++void GroundTrackCanvas::DoPaint()
+ {
+    #ifdef DEBUG_ONPAINT
+    MessageInterface::ShowMessage
+diff --git a/src/gui/subscriber/GroundTrackCanvas.hpp b/src/gui/subscriber/GroundTrackCanvas.hpp
+index 212f186..6d002c3 100644
+--- a/src/gui/subscriber/GroundTrackCanvas.hpp
++++ b/src/gui/subscriber/GroundTrackCanvas.hpp
+@@ -79,6 +79,7 @@ public:
+ protected:
+    
+    // events
++   void DoPaint();
+    void OnPaint(wxPaintEvent &event);
+    void OnSize(wxSizeEvent &event);
+    void OnMouse(wxMouseEvent &event);
+diff --git a/src/gui/subscriber/MdiChildTsFrame.cpp b/src/gui/subscriber/MdiChildTsFrame.cpp
+index 53e9e4d..2a4f491 100644
+--- a/src/gui/subscriber/MdiChildTsFrame.cpp
++++ b/src/gui/subscriber/MdiChildTsFrame.cpp
+@@ -815,8 +815,7 @@ void MdiChildTsFrame::RedrawCurve()
+       Update(); // need Update to show plot as it runs
+       
+       mXyPlot->DataUpdate(true);
+-      wxPaintEvent pvt;
+-      mXyPlot->OnPaint(pvt);
++      mXyPlot->DoPaint();
+       
+       // Turning this OFF for Mac for now; this modification makes the XY Plot
+       // go grey at the end of the run
+diff --git a/src/gui/subscriber/OrbitViewCanvas.cpp b/src/gui/subscriber/OrbitViewCanvas.cpp
+index f64b805..d55ac1d 100644
+--- a/src/gui/subscriber/OrbitViewCanvas.cpp
++++ b/src/gui/subscriber/OrbitViewCanvas.cpp
+@@ -886,6 +886,8 @@ void OrbitViewCanvas::TakeAction(const std::string &action)
+  */
+ //------------------------------------------------------------------------------
+ void OrbitViewCanvas::OnPaint(wxPaintEvent& event)
++{ DoPaint(); }
++void OrbitViewCanvas::DoPaint()
+ {
+    #ifdef DEBUG_ON_PAINT
+    MessageInterface::ShowMessage
+diff --git a/src/gui/subscriber/OrbitViewCanvas.hpp b/src/gui/subscriber/OrbitViewCanvas.hpp
+index d8b7feb..7da0806 100644
+--- a/src/gui/subscriber/OrbitViewCanvas.hpp
++++ b/src/gui/subscriber/OrbitViewCanvas.hpp
+@@ -112,6 +112,7 @@ public:
+ protected:
+    
+    // events
++   void DoPaint();
+    void OnPaint(wxPaintEvent &event);
+    void OnSize(wxSizeEvent &event);
+    void OnMouse(wxMouseEvent &event);
+diff --git a/src/gui/subscriber/TsPlotCanvas.cpp b/src/gui/subscriber/TsPlotCanvas.cpp
+index d47cd56..0e8022d 100644
+--- a/src/gui/subscriber/TsPlotCanvas.cpp
++++ b/src/gui/subscriber/TsPlotCanvas.cpp
+@@ -174,14 +174,14 @@ void TsPlotCanvas::OnRefresh(wxFocusEvent& ev)
+       ("==> TsPlotCanvas::OnRefresh() entered");
+    #endif
+ 
+-   wxPaintEvent pev;
+-   pev.SetEventObject(this);
+    drawAllCounter = 2;
+-   ProcessWindowEvent(pev);
++   DoPaint();
+ }
+ 
+ 
+ void TsPlotCanvas::OnPaint(wxPaintEvent& ev)
++{ DoPaint(); }
++void TsPlotCanvas::DoPaint()
+ {
+    #ifdef DEBUG_TS_CANVAS
+    MessageInterface::ShowMessage
+diff --git a/src/gui/subscriber/TsPlotCanvas.hpp b/src/gui/subscriber/TsPlotCanvas.hpp
+index a6d4f02..d528351 100644
+--- a/src/gui/subscriber/TsPlotCanvas.hpp
++++ b/src/gui/subscriber/TsPlotCanvas.hpp
+@@ -50,6 +50,7 @@ public:
+                 long style = wxTAB_TRAVERSAL,
+                 const wxString& name = "");
+ 
++   virtual void DoPaint();
+    virtual void OnPaint(wxPaintEvent& ev);
+    virtual void OnRefresh(wxFocusEvent& ev);
+    virtual void OnSize(wxSizeEvent& ev);
+diff --git a/src/gui/subscriber/ViewCanvas.hpp b/src/gui/subscriber/ViewCanvas.hpp
+index f832058..f5311d8 100644
+--- a/src/gui/subscriber/ViewCanvas.hpp
++++ b/src/gui/subscriber/ViewCanvas.hpp
+@@ -354,6 +354,7 @@ protected:
+    Rmatrix mCoordMatrix;
+    
+    // Events
++   virtual void DoPaint() = 0;
+    virtual void OnPaint(wxPaintEvent &event) = 0;
+    virtual void OnSize(wxSizeEvent &event) = 0;
+    virtual void OnMouse(wxMouseEvent &event) = 0;
+-- 
+2.39.2
+
