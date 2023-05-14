@@ -1,0 +1,22 @@
+diff --git a/xontrib/direnv.xsh b/xontrib/direnv.xsh
+index 7d928a4..f9c497f 100644
+--- a/xontrib/direnv.xsh
++++ b/xontrib/direnv.xsh
+@@ -3,6 +3,8 @@ import json, subprocess
+ # workaround for https://github.com/74th/xonsh-direnv/issues/2
+ $UPDATE_OS_ENVIRON = True
+ 
++ignored = ['PROMPT', 'RIGHT_PROMPT']
++
+ def __direnv():
+     p = subprocess.Popen(
+         'direnv export json'.split(),
+@@ -14,6 +16,8 @@ def __direnv():
+     if r and p.returncode == 0:
+         lines = json.loads(r)
+         for k, v in lines.items():
++            if k in ignored:
++                continue
+             if v is None:
+                 del __xonsh__.env[k]
+             else:
