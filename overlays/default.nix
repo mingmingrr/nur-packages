@@ -8,7 +8,7 @@ rec {
   python3-modules = self: super: {
     python3 = super.python3.override {
       packageOverrides = pself: psuper:
-        readNixDir pself.callPackage ../pkgs/python-modules;
+        python-modules pself psuper;
     };
   };
 
@@ -17,8 +17,8 @@ rec {
   python3-xontribs = self: super: {
     python3 = super.python3.override {
       packageOverrides = pself: psuper:
-        readNixDir pself.callPackage ../pkgs/xontribs //
-        python-modules pself psuper;
+        python-modules pself psuper //
+        xontribs pself psuper;
     };
   };
 

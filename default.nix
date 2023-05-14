@@ -12,18 +12,18 @@ in rec {
 
   python3Packages = with pkgs.lib; with selfLib; let
     pkgs' = selfOverlays.python3-modules pkgs' pkgs;
-  in getAttrs (attrNames (readNixDir (path: _: path) ./pkgs/python-modules))
+  in getAttrs (attrNames (readNixDir (path: _: path) pkgs/python-modules))
     pkgs'.python3.pkgs;
 
   nodePackages = import pkgs/node-packages { inherit pkgs; };
 
   xontribs = with pkgs.lib; with selfLib; let
     pkgs' = selfOverlays.python3-xontribs pkgs' pkgs;
-  in getAttrs (attrNames (readNixDir (path: _: path) ./pkgs/xontribs))
+  in getAttrs (attrNames (readNixDir (path: _: path) pkgs/xontribs))
     pkgs'.python3.pkgs;
 
   vimPlugins = with selfLib;
-    readNixDir pkgs.callPackage ./pkgs/vim-plugins;
+    readNixDir pkgs.callPackage pkgs/vim-plugins;
 
   cspice = pkgs.callPackage pkgs/cspice {};
   gmat = pkgs.callPackage pkgs/gmat {
