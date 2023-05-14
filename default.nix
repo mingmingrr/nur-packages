@@ -15,6 +15,7 @@ in rec {
   in getAttrs (attrNames (readNixDir (path: _: path) ./pkgs/python-modules))
     pkgs'.python3.pkgs;
 
+  nodePackages = import pkgs/node-packages { inherit pkgs; };
 
   xontribs = with pkgs.lib; with selfLib; let
     pkgs' = selfOverlays.python3-xontribs pkgs' pkgs;
