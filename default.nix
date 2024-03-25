@@ -32,4 +32,6 @@ in rec {
     inherit cspice;
     wxGTK32 = pkgs.wxGTK32.override { compat28 = true; };
   };
+
+  ranger-git = pkgs.callPackage pkgs/ranger-git {};
 }
