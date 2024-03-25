@@ -1,12 +1,12 @@
 { vimUtils, fetchFromGitHub }:
 vimUtils.buildVimPlugin {
   pname = "spotdiff-vim";
-  version = "2022-10-28";
+  version = "2024-01-19";
   src = fetchFromGitHub {
     owner = "rickhowe";
     repo = "spotdiff.vim";
-    rev = "d70c6f6cfa171bccea6d822f7271241d702e6cfb";
-    sha256 = "0w9rszimg1jai6zd9hqli50zfck518wqzi3nzqkr2d8h596ns6cg";
+    rev = "16634e6949ada5dde525c26f1ab854e5763d41a2";
+    sha256 = "081c5smcxdqwkhgbrwp7b5hymm7l2yk19l82kjk99js57xjkr6af";
   };
   meta.homepage = "https://github.com/rickhowe/spotdiff.vim";
 }
