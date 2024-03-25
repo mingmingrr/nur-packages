@@ -34,4 +34,7 @@ in rec {
   };
 
   ranger-git = pkgs.callPackage pkgs/ranger-git {};
+
+  discover-overlay = pkgs.callPackage pkgs/discover-overlay {};
+  highlight-pointer = pkgs.callPackage pkgs/highlight-pointer {};
 }
